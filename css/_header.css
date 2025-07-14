@@ -1,0 +1,100 @@
+/* _header.css */
+
+.main-header {
+    padding: calc(var(--spacing-unit) * 0.8) 0;
+    background-color: var(--color-navy);
+    color: var(--color-white);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: all var(--transition-speed) var(--transition-ease);
+}
+
+.main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo (Image + Text) Styling - 50px logo icon */
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.5rem 0;
+}
+
+.logo-circle-wrapper {
+    width: 65px;
+    height: 65px;
+    background-color: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    margin-right: 15px;
+    flex-shrink: 0;
+    transition: transform var(--transition-speed) var(--transition-ease);
+}
+
+.logo-circle-wrapper:hover {
+    transform: scale(1.08);
+}
+
+.logo-circle-wrapper img {
+    width: 50px;
+    height: 50px;
+    display: block;
+}
+
+.logo span {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--color-white);
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+/* Main Navigation */
+.main-nav ul {
+    list-style: none;
+    display: flex;
+}
+
+.main-nav ul li {
+    margin-left: calc(var(--spacing-unit) * 2.5);
+}
+
+.main-nav ul li a {
+    color: var(--color-white);
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 8px;
+    letter-spacing: 0.02em;
+    transition: all var(--transition-speed) var(--transition-ease);
+    font-family: var(--font-body);
+}
+
+.main-nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-royal-blue);
+    transition: width var(--transition-speed) var(--transition-ease);
+}
+
+.main-nav ul li a:hover::after,
+.main-nav ul li a.active::after {
+    width: 100%;
+}
+
+.nav-toggle {
+    display: none;
+}

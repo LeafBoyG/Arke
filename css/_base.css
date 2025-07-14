@@ -1,0 +1,101 @@
+/* _base.css */
+
+/* Universal box-sizing for consistent layouts */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Base Body Styles */
+body {
+    font-family: var(--font-body);
+    line-height: 1.75;
+    color: var(--color-dark-gray);
+    background-color: var(--color-light-gray);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* Container for consistent content width with elegant spacing */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 calc(var(--spacing-unit) * 2);
+}
+
+/* Anchor Link Styling - Clean and inviting */
+a {
+    color: var(--color-royal-blue);
+    text-decoration: none;
+    transition: color var(--transition-speed) var(--transition-ease),
+                transform 0.15s var(--transition-ease);
+}
+
+a:hover {
+    color: var(--color-navy);
+    transform: translateY(-2px);
+}
+
+/* Buttons - Elegant and actionable */
+.btn {
+    display: inline-block;
+    padding: calc(var(--spacing-unit) * 0.8) calc(var(--spacing-unit) * 1.8);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all var(--transition-speed) var(--transition-ease);
+    cursor: pointer;
+    border: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--color-royal-blue);
+    color: var(--color-white);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-navy);
+    box-shadow: 0 6px 20px rgba(26, 44, 63, 0.4);
+    transform: translateY(-3px);
+}
+
+.btn-secondary {
+    background-color: var(--color-white);
+    color: var(--color-navy);
+    border: 2px solid var(--color-navy);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transform: translateY(-3px);
+}
+
+/* General Typography (Applies across site unless overridden) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--color-navy);
+    line-height: 1.2;
+    margin-bottom: var(--spacing-unit);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* General Heading Sizes */
+h1 { font-size: clamp(3rem, 7vw, 5.5rem); }
+h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h3 { font-size: 1.5rem; }
+
+p {
+    margin-bottom: var(--spacing-unit);
+}

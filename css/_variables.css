@@ -1,0 +1,30 @@
+/* _variables.css */
+
+:root {
+    /* Color Palette */
+    --color-navy: #1A2C3F;
+    --color-royal-blue: #007BFF;
+    --color-brown: #B5651D;
+    --color-light-gray: #F8F8F8;
+    --color-dark-gray: #2C2C2C;
+    --color-white: #FFFFFF;
+
+    /* Fonts - Sans-serif */
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Spacing Unit */
+    --spacing-unit: 1rem;
+
+    /* General Transitions */
+    --transition-speed: 0.3s;
+    --transition-ease: ease-in-out;
+}
+
+/* Animation (Defined once here as it's used globally and in articles) */
+@keyframes fadeInSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
