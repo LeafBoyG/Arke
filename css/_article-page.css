@@ -536,3 +536,36 @@ ul li, ol li {
         top: 0.1em;
     }
 }
+
+
+.animation-container {
+    display: flex; /* Use flexbox to align year and text */
+    justify-content: center;
+    align-items: baseline; /* Align at the bottom of the text */
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    opacity: 0; /* Starts hidden for initial js-fade-in animation */
+    transform: translateY(15px);
+    animation: fadeInSlideUp 1s forwards var(--transition-ease) 1.5s; /* Staggered animation */
+}
+
+.historical-year-animation {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, 4rem); /* Large for impact */
+    color: var(--color-white);
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    letter-spacing: -0.02em;
+    margin-right: 10px; /* Space between number and text */
+    display: inline-block; /* Essential for text shadow and spacing */
+    min-width: 120px; /* Give it space to prevent jump */
+    text-align: right; /* Align numbers to the right as they change */
+}
+
+.historical-distance-text {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    margin-bottom: 0; /* Remove paragraph default margin */
+    padding-bottom: 0;
+    line-height: 1; /* Align vertically with number */
+}
