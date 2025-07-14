@@ -12,11 +12,16 @@ body {
     font-family: var(--font-body);
     line-height: 1.75;
     color: var(--color-dark-gray);
-    background-color: var(--color-light-gray);
+    background-color: var(--color-light-gray); /* Default page background for all pages */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
     overflow-x: hidden;
+}
+
+/* For mobile nav/lightbox to prevent body scroll */
+body.no-scroll {
+    overflow: hidden;
 }
 
 /* Container for consistent content width with elegant spacing */
@@ -98,4 +103,171 @@ h3 { font-size: 1.5rem; }
 
 p {
     margin-bottom: var(--spacing-unit);
+}
+
+/* Scroll-to-Top Button */
+.scroll-to-top {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--spacing-unit) * 1.5);
+    right: calc(var(--spacing-unit) * 1.5);
+    background-color: var(--color-royal-blue);
+    color: var(--color-white);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-to-top.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Lightbox Overlay */
+.lightbox-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.lightbox-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    background-color: var(--color-white);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background-color: var(--color-navy);
+    color: var(--color-white);
+    font-size: 2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s ease;
+}
+.lightbox-close:hover {
+    background-color: var(--color-royal-blue);
+}
+
+/* Scroll-Triggered Fade-In Animation */
+.js-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s var(--transition-ease), transform 0.6s var(--transition-ease);
+}
+
+.js-fade-in.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* "Read More" Toggle */
+.expandable-card {
+    position: relative;
+    padding-bottom: calc(var(--spacing-unit) * 3.5);
+}
+
+.expandable-wrapper {
+    max-height: 4.5em;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.5s ease-out;
+}
+
+.expandable-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3em;
+    background: linear-gradient(to bottom, transparent, var(--color-white) 80%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.expandable-wrapper.expanded {
+    max-height: none;
+}
+
+.expandable-wrapper.expanded::after {
+    opacity: 0;
+}
+
+.read-more-btn {
+    position: absolute;
+    bottom: calc(var(--spacing-unit) * 0.8);
+    left: calc(var(--spacing-unit) * 2);
+}
+
+/* Client-Side Search Filter Input */
+.search-bar {
+    padding: calc(var(--spacing-unit) * 2) 0;
+    text-align: center;
+}
+
+.search-filter-input {
+    width: 100%;
+    max-width: 400px;
+    padding: calc(var(--spacing-unit) * 0.8);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-dark-gray);
+    transition: border-color var(--transition-speed) var(--transition-ease),
+                box-shadow var(--transition-speed) var(--transition-ease);
+    text-align: center;
+}
+
+.search-filter-input::placeholder {
+    color: rgba(0,0,0,0.4);
+}
+
+.search-filter-input:focus {
+    outline: none;
+    border-color: var(--color-royal-blue);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }

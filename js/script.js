@@ -20,17 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Navigation Toggle
     const navToggle = document.querySelector('.nav-toggle');
     const mainNav = document.querySelector('.main-nav');
-    const header = document.querySelector('.main-header');
+    const header = document.querySelector('.main-header'); // For sticky header class
 
     if (navToggle && mainNav && header) {
         navToggle.addEventListener('click', () => {
             mainNav.classList.toggle('active');
             navToggle.setAttribute('aria-expanded', mainNav.classList.contains('active'));
-            // Optionally prevent body scroll when mobile nav is open
-            document.body.classList.toggle('no-scroll', mainNav.classList.contains('active'));
+            document.body.classList.toggle('no-scroll', mainNav.classList.contains('active')); // Prevent body scroll
         });
 
-        // Close mobile nav when a link is clicked
+        // Close mobile nav when a link is clicked inside it
         mainNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mainNav.classList.remove('active');
@@ -42,8 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dynamic "Active" Navigation Link Highlighting
     const highlightNavLink = () => {
-        // CHANGED: Use 'let' instead of 'const' for currentPath as it might be reassigned
-        let currentPath = window.location.pathname;
+        let currentPath = window.location.pathname; // Changed to 'let' for reassignment
         const navLinks = document.querySelectorAll('.main-nav ul li a');
 
         // Normalize paths for comparison (e.g., /index.html and / become /)
@@ -52,22 +50,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         navLinks.forEach(link => {
-            // CHANGED: Use 'let' instead of 'const' for linkPath as it might be reassigned
-            let linkPath = new URL(link.href).pathname;
+            let linkPath = new URL(link.href).pathname; // Changed to 'let' for reassignment
 
             if (linkPath === '/index.html' || linkPath === '/index.htm') {
                 linkPath = '/';
             }
 
-            // For nested pages (e.g., /article/topics/roman-aqueducts.html)
-            // we might want the parent category (Topics) to be active.
+            // Check for exact match OR if current page is within the linked category
             const segmentsCurrent = currentPath.split('/').filter(Boolean);
             const segmentsLink = linkPath.split('/').filter(Boolean);
 
-            // Check for exact match, or if current page is within the linked category
-            if (currentPath === linkPath ||
-                (segmentsCurrent.length > 0 && segmentsLink.length > 0 && segmentsCurrent[0] === 'article' && segmentsCurrent[1] === segmentsLink[0] &&
-                 linkPath === `/${segmentsLink[0]}.html`)) {
+            if (currentPath === linkPath) {
+                link.classList.add('active');
+            }
+            // Logic for highlighting parent category for nested articles (e.g., /article/topics/roman-aqueducts.html highlights 'Topics')
+            else if (segmentsCurrent.length > 1 && segmentsLink.length > 0 &&
+                     segmentsCurrent[0] === 'article' && segmentsCurrent[1] === segmentsLink[0] &&
+                     linkPath === `/${segmentsLink[0]}.html`) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active'); // Ensure only one is active
@@ -77,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     highlightNavLink(); // Call on load
 
     // Sticky Header Appearance Change
-    if (header) {
+    if (header) { // Ensure header exists before adding listener
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) { // After 50px scroll
                 header.classList.add('scrolled');
@@ -136,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.addEventListener('click', () => {
                 lightboxImg.src = img.src;
                 lightboxOverlay.classList.add('visible');
-                document.body.classList.add('no-scroll');
+                document.body.classList.add('no-scroll'); // Prevent body scroll
             });
         });
 
@@ -162,8 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll-Triggered Fade-In Animation for Sections (beyond Hero)
     const animateOnScroll = () => {
-        const sectionsToAnimate = document.querySelectorAll('section:not(.hero-article, .hero-home), .featured-card, .grid-card, .text-block, .team-member, .info-card');
-        if (sectionsToAnimate.length === 0) return; // Exit if no elements to observe
+        // Target all sections that are not hero-article or hero-home, plus specific cards/blocks
+        const sectionsToAnimate = document.querySelectorAll(
+            'section:not(.hero-article, .hero-home), ' +
+            '.featured-card, .grid-card, .article-list-card, ' +
+            '.text-block, .team-member, .info-card'
+        );
+
+        if (sectionsToAnimate.length === 0) return;
 
         const observerOptions = {
             root: null, // viewport
@@ -193,22 +198,31 @@ document.addEventListener('DOMContentLoaded', () => {
         
         expandableCards.forEach(card => {
             const content = card.querySelector('p'); // The paragraph to expand
-            if (!content) return; // Skip if no paragraph found
+            if (!content) return; 
 
-            // Check if content overflows. Use a temporary clone or check scrollHeight vs clientHeight.
-            // A more robust check might involve creating a temporary clone of the element
-            // to measure its height without maxHeight applied. For simplicity, we'll assume
-            // if scrollHeight > clientHeight, it overflows, or if card has a fixed height.
-            const hasMoreContent = content.scrollHeight > content.clientHeight; // Basic overflow check
+            // Measure if content overflows
+            // Clone content to measure true scrollHeight if max-height is applied via CSS initially
+            const tempDiv = document.createElement('div');
+            tempDiv.style.visibility = 'hidden';
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.maxHeight = 'none'; // Allow to expand fully for measurement
+            tempDiv.style.width = content.offsetWidth + 'px'; // Match original width
+            tempDiv.innerHTML = content.innerHTML;
+            document.body.appendChild(tempDiv);
+            const hasMoreContent = tempDiv.scrollHeight > content.clientHeight;
+            document.body.removeChild(tempDiv);
 
-            if (!hasMoreContent && !card.classList.contains('expandable-card')) { // Only add toggle if content overflows and it's not already set up
+
+            if (!hasMoreContent) {
+                card.classList.remove('expandable-card'); // Remove expandable class if not overflowing
                 return;
             }
             
-            // Add a class to indicate it needs expansion behavior
             card.classList.add('expandable-card'); // New class to apply max-height/fade via CSS
 
-            const readMoreBtn = document.createElement('button');
+            // Line 99: This is where 'pBtn' was expected to be declared/used.
+            // Ensure the button is created correctly.
+            const readMoreBtn = document.createElement('button'); // Declare readMoreBtn with 'const'
             readMoreBtn.classList.add('btn', 'btn-secondary', 'read-more-btn');
             readMoreBtn.textContent = 'Read More';
             card.appendChild(readMoreBtn);
@@ -217,11 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.classList.toggle('expanded'); // Toggle expanded class on the card
                 if (card.classList.contains('expanded')) {
                     readMoreBtn.textContent = 'Show Less';
-                    // Optional: If you want smooth height transition, set max-height to scrollHeight dynamically
-                    // card.querySelector('.expandable-content-wrapper').style.maxHeight = card.querySelector('.expandable-content-wrapper').scrollHeight + 'px';
+                    // Optional: If you want smooth height transition, you'd set max-height dynamically here
+                    // e.g., content.style.maxHeight = content.scrollHeight + 'px';
                 } else {
                     readMoreBtn.textContent = 'Read More';
-                    // card.querySelector('.expandable-content-wrapper').style.maxHeight = ''; // Revert to CSS defined max-height
+                    // content.style.maxHeight = ''; // Revert to CSS defined max-height
                 }
             });
         });
@@ -232,19 +246,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Basic Client-Side Filtering (e.g., for Topics/Eras overview pages)
     const setupClientSideFilter = () => {
         const searchInput = document.querySelector('.search-filter-input');
-        const gridContainer = document.querySelector('.article-list-grid, .featured-grid, .grid-items');
+        const gridContainers = document.querySelectorAll('.article-list-grid, .featured-grid, .grid-items'); 
 
-        if (!searchInput || !gridContainer) return;
+        if (!searchInput || gridContainers.length === 0) return;
 
-        const cards = Array.from(gridContainer.children);
+        // Store all cards from all targeted grids
+        let allCards = [];
+        gridContainers.forEach(container => {
+            allCards = allCards.concat(Array.from(container.children));
+        });
 
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase().trim();
 
-            cards.forEach(card => {
+            allCards.forEach(card => {
                 const cardText = card.textContent.toLowerCase();
                 if (cardText.includes(searchTerm)) {
-                    card.style.display = 'flex'; // Or 'block', etc., based on your card's default display
+                    card.style.display = 'flex'; // Ensure card's display property is set correctly
                 } else {
                     card.style.display = 'none';
                 }
@@ -262,4 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Find the year '2025' and replace it with the current year
         copyrightSpan.textContent = copyrightSpan.textContent.replace('2025', new Date().getFullYear());
     }
+
+    // --- Complex Features (Conceptual - Not fully implemented here) ---
+    // Interactive Timelines, more advanced search, etc., would go here.
 });

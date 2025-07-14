@@ -21,7 +21,7 @@
     --transition-ease: ease-in-out;
 }
 
-/* Animation (Defined once here as it's used globally and in articles) */
+/* Global Animation (Used across different sections) */
 @keyframes fadeInSlideUp {
     to {
         opacity: 1;

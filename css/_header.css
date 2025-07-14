@@ -11,6 +11,19 @@
     transition: all var(--transition-speed) var(--transition-ease);
 }
 
+.main-header.scrolled { /* Class added by JS when scrolled */
+    padding: calc(var(--spacing-unit) * 0.5) 0;
+    background-color: rgba(26, 44, 63, 0.95);
+    box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+}
+.main-header.scrolled .logo-circle-wrapper {
+    transform: scale(0.9);
+}
+.main-header.scrolled .logo span {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+}
+
+
 .main-header .container {
     display: flex;
     justify-content: space-between;
