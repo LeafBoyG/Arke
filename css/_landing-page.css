@@ -1,8 +1,7 @@
 /* _landing-page.css */
 
-
+/* Overall container for landing page content */
 .landing-page {
-    /* **CHANGED: Revert to light gray background for the main content area** */
     background-color: var(--color-light-gray);
 }
 
@@ -12,13 +11,15 @@
     height: 80vh;
     min-height: 500px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column; /* Ensure content stacks vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
     text-align: center;
-    color: var(--color-white); /* Text remains white here, on top of dark image overlay */
+    color: var(--color-white);
     margin-bottom: calc(var(--spacing-unit) * 5);
     overflow: hidden;
-    background-color: var(--color-navy); /* Fallback/background for overlay */
+    background-color: var(--color-navy);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
 }
 
 .landing-page .hero-home .hero-image {
@@ -28,7 +29,7 @@
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)); /* Dark overlay for image */
+    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85));
 }
 
 .landing-page .hero-home .hero-image img {
@@ -46,14 +47,18 @@
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInSlideUp 1s forwards var(--transition-ease) 0.5s;
+
+    /* **ADJUSTMENT: Move content slightly further down** */
+    margin-top: calc(var(--spacing-unit) * 5); /* Pushes content down from the vertical center */
+    /* Alternative: adjust padding-top on hero-home or hero-content if flex isn't perfect */
 }
 
 .landing-page .hero-home h1 {
     font-size: clamp(3.5rem, 8vw, 6.5rem);
     margin-bottom: var(--spacing-unit);
     color: var(--color-white) !important; /* Force to white */
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
-                 0 0 30px rgba(255, 255, 255, 0.4);
+    /* **ADJUSTMENT: Subtler, non-neon text-shadow** */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Classic, soft dark shadow for contrast */
     letter-spacing: -0.06em;
 }
 
@@ -67,30 +72,30 @@
     opacity: 0;
     transform: translateY(15px);
     animation: fadeInSlideUp 1s forwards var(--transition-ease) 0.8s;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    /* **ADJUSTMENT: Subtler text-shadow for tagline** */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* Featured Content Section (now back on light background) */
+
+
+/* Featured Content Section (remains on light background based on index.html's .landing-page bg) */
 .featured-content {
     padding: calc(var(--spacing-unit) * 5) 0;
     text-align: center;
-    /* **CHANGED: Revert background to light gray** */
-    background-color: var(--color-light-gray);
-    /* **CHANGED: Revert text color to dark for readability** */
-    color: var(--color-dark-gray);
+    background-color: var(--color-light-gray); /* Ensure light background for contrast with dark text */
+    color: var(--color-dark-gray); /* Ensure text is dark for readability */
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05); /* Subtle shadow where hero meets this section */
 }
 
 .featured-content h2 {
-    margin-bottom: calc(var(--spacing-unit) * 3);
-    font-size: clamp(2.5rem, 5vw, 3.8rem);
-    position: relative;
-    padding-bottom: var(--spacing-unit);
-    /* **CHANGED: Revert heading color to navy** */
-    color: var(--color-navy);
+    color: var(--color-navy); /* Headings are navy on light background */
 }
-.featured-content h2::after {
-    background-color: var(--color-royal-blue); /* Accent color remains */
+
+.featured-content p {
+    color: var(--color-dark-gray); /* Paragraphs are dark on light background */
 }
+
+
 
 .featured-grid {
     display: grid;
