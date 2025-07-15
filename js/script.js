@@ -1,340 +1,313 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- Global Utility Functions ---
-    const smoothScroll = (targetElement) => {
-        if (targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - (document.querySelector('.main-header')?.offsetHeight || 0),
-                behavior: 'smooth'
-            });
-        }
-    };
-
-    // --- 1. Header & Navigation Enhancements ---
-
+    // 1. Navigation Toggle for Mobile
     const navToggle = document.querySelector('.nav-toggle');
     const mainNav = document.querySelector('.main-nav');
-    const header = document.querySelector('.main-header');
+    const body = document.body;
 
-    if (navToggle && mainNav && header) {
+    if (navToggle && mainNav) {
         navToggle.addEventListener('click', () => {
             mainNav.classList.toggle('active');
-            navToggle.setAttribute('aria-expanded', mainNav.classList.contains('active'));
-            document.body.classList.toggle('no-scroll', mainNav.classList.contains('active'));
+            body.classList.toggle('no-scroll');
         });
 
         mainNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                mainNav.classList.remove('active');
-                navToggle.setAttribute('aria-expanded', false);
-                document.body.classList.remove('no-scroll');
-            });
-        });
-    }
-
-    const highlightNavLink = () => {
-        let currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.main-nav ul li a');
-
-        if (currentPath === '/index.html' || currentPath === '/index.htm') {
-            currentPath = '/';
-        }
-
-        navLinks.forEach(link => {
-            let linkPath = new URL(link.href).pathname;
-
-            if (linkPath === '/index.html' || linkPath === '/index.htm') {
-                linkPath = '/';
-            }
-
-            const segmentsCurrent = currentPath.split('/').filter(Boolean);
-            const segmentsLink = linkPath.split('/').filter(Boolean);
-
-            if (currentPath === linkPath) {
-                link.classList.add('active');
-            } else if (segmentsCurrent.length > 1 && segmentsLink.length > 0 &&
-                segmentsCurrent[0] === 'article' && segmentsCurrent[1] === segmentsLink[0] &&
-                linkPath === `/${segmentsLink[0]}.html`) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-    };
-    highlightNavLink();
-
-    if (header) {
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        });
-    }
-
-    const scrollToTopBtn = document.createElement('button');
-    scrollToTopBtn.textContent = '↑';
-    scrollToTopBtn.classList.add('scroll-to-top');
-    document.body.appendChild(scrollToTopBtn);
-
-    window.addEventListener('scroll', () => {
-        scrollToTopBtn.classList.toggle('show', window.scrollY > 300);
-    });
-
-    scrollToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // --- 2. Content Presentation & Interactivity ---
-
-    const setupLightbox = () => {
-        const figures = document.querySelectorAll('.article-content figure img');
-        if (!figures.length) return;
-
-        const lightboxOverlay = document.createElement('div');
-        lightboxOverlay.classList.add('lightbox-overlay');
-        document.body.appendChild(lightboxOverlay);
-
-        const lightboxContent = document.createElement('div');
-        lightboxContent.classList.add('lightbox-content');
-        lightboxOverlay.appendChild(lightboxContent);
-
-        const lightboxImg = document.createElement('img');
-        lightboxContent.appendChild(lightboxImg);
-
-        const closeBtn = document.createElement('span');
-        closeBtn.classList.add('lightbox-close');
-        closeBtn.innerHTML = '&times;';
-        lightboxContent.appendChild(closeBtn);
-
-        figures.forEach(img => {
-            img.style.cursor = 'zoom-in';
-            img.addEventListener('click', () => {
-                lightboxImg.src = img.src;
-                lightboxOverlay.classList.add('visible');
-                document.body.classList.add('no-scroll');
-            });
-        });
-
-        const closeLightbox = () => {
-            lightboxOverlay.classList.remove('visible');
-            document.body.classList.remove('no-scroll');
-        };
-
-        closeBtn.addEventListener('click', closeLightbox);
-        lightboxOverlay.addEventListener('click', e => {
-            if (e.target === lightboxOverlay) closeLightbox();
-        });
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && lightboxOverlay.classList.contains('visible')) closeLightbox();
-        });
-    };
-    setupLightbox();
-
-    const animateOnScroll = () => {
-        const sectionsToAnimate = document.querySelectorAll(
-            'section:not(.hero-article, .hero-home), ' +
-            '.featured-card, .grid-card, .article-list-card, ' +
-            '.text-block, .team-member, .info-card'
-        );
-        if (!sectionsToAnimate.length) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
+                if (mainNav.classList.contains('active')) {
+                    mainNav.classList.remove('active');
+                    body.classList.remove('no-scroll');
                 }
             });
-        }, { root: null, rootMargin: '0px', threshold: 0.01 });
-
-        sectionsToAnimate.forEach(section => {
-            section.classList.add('js-fade-in');
-            observer.observe(section);
         });
-    };
-    animateOnScroll();
-
-    const setupReadMoreToggles = () => {
-        const expandableCards = document.querySelectorAll('.featured-card, .grid-card, .article-list-card');
-
-        expandableCards.forEach(card => {
-            if (card.querySelector('.btn') && !card.classList.contains('expandable-override')) {
-                card.classList.remove('expandable-card');
-                return;
-            }
-
-            const content = card.querySelector('p');
-            if (!content) return;
-
-            const tempDiv = document.createElement('div');
-            tempDiv.style.visibility = 'hidden';
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.maxHeight = 'none';
-            tempDiv.style.width = content.offsetWidth + 'px';
-            tempDiv.innerHTML = content.innerHTML;
-            document.body.appendChild(tempDiv);
-
-            const hasMoreContent = tempDiv.scrollHeight > content.clientHeight;
-            document.body.removeChild(tempDiv);
-
-            if (!hasMoreContent) {
-                card.classList.remove('expandable-card');
-                return;
-            }
-
-            card.classList.add('expandable-card');
-
-            const readMoreBtn = document.createElement('button');
-            readMoreBtn.classList.add('btn', 'btn-secondary', 'read-more-btn');
-            readMoreBtn.textContent = 'Read More';
-            card.appendChild(readMoreBtn);
-
-            readMoreBtn.addEventListener('click', () => {
-                card.classList.toggle('expanded');
-                readMoreBtn.textContent = card.classList.contains('expanded') ? 'Show Less' : 'Read More';
-            });
-        });
-    };
-    setupReadMoreToggles();
-
-    const setupClientSideFilter = () => {
-        const searchInput = document.querySelector('.search-filter-input');
-        const gridContainers = document.querySelectorAll('.article-list-grid, .featured-grid, .grid-items');
-
-        if (!searchInput || !gridContainers.length) return;
-
-        let allCards = [];
-        gridContainers.forEach(container => {
-            allCards = allCards.concat(Array.from(container.children));
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            allCards.forEach(card => {
-                card.style.display = card.textContent.toLowerCase().includes(searchTerm) ? 'flex' : 'none';
-            });
-        });
-    };
-    setupClientSideFilter();
-
-    // --- 3. Minor Enhancements ---
-
-    const copyrightSpan = document.querySelector('.main-footer p');
-    if (copyrightSpan) {
-        copyrightSpan.textContent = copyrightSpan.textContent.replace('2025', new Date().getFullYear());
     }
 
+    // 2. Header Scroll Effect
+    const mainHeader = document.querySelector('.main-header');
+    if (mainHeader) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                mainHeader.classList.add('scrolled');
+            } else {
+                mainHeader.classList.remove('scrolled');
+            }
+        });
+    }
 
- const setupYearRollbackAnimation = () => {
-        const animationContainer = document.querySelector('.animation-container');
-        const rollingYearSpan = document.getElementById('rolling-year');
+    // 3. Intersection Observer for Fade-In Elements (.js-fade-in)
+    const fadeInElements = document.querySelectorAll('.js-fade-in');
 
-        if (!animationContainer || !rollingYearSpan) return;
+    const fadeInObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    });
 
-        const targetYear = parseInt(animationContainer.dataset.targetYear, 10);
-        if (isNaN(targetYear)) return;
+    fadeInElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        if (
+            (element.classList.contains('hero-content') || element.classList.contains('hero-page-header') || element.classList.contains('hero-home')) &&
+            rect.top < window.innerHeight && rect.bottom > 0
+        ) {
+            element.classList.add('is-visible');
+        } else {
+            fadeInObserver.observe(element);
+        }
+    });
 
-        const startYear = new Date().getFullYear();
-        const startStr = Math.abs(startYear).toString();
-        const targetStr = Math.abs(targetYear).toString();
-        const isBCE = targetYear < 0;
+    // 4. Lazy Loading Images (.lazy.blur-up)
+    const lazyImages = document.querySelectorAll('img.lazy.blur-up');
 
-        const totalDigits = Math.max(startStr.length, targetStr.length);
-        const animationDuration = 5000;
-        const digitSlots = [];
+    const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.onload = () => {
+                        img.classList.add('lazy-loaded');
+                    };
+                }
+                observer.unobserve(img);
+            }
+        });
+    }, {
+        threshold: 0.2
+    });
 
-        rollingYearSpan.innerHTML = ''; // clear
+    lazyImages.forEach(img => {
+        lazyLoadObserver.observe(img);
+    });
 
-        // Create slots
-        for (let i = 0; i < totalDigits; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'digit-slot';
+  // 5. Rolling Year Animation
+    const rollingYearElement = document.getElementById('rolling-year');
+    const animationContainer = document.querySelector('.animation-container[data-target-year]');
+    const historicalDistanceTextElement = document.querySelector('.historical-distance-text');
 
-            const strip = document.createElement('div');
-            strip.className = 'digit-strip';
+    const rawTargetYear = animationContainer ? parseInt(animationContainer.dataset.targetYear) : null;
+    const isBCE = rawTargetYear < 0;
+    const yearForAnimation = isBCE ? Math.abs(rawTargetYear) : rawTargetYear;
 
-            for (let d = 0; d <= 9; d++) {
-                const span = document.createElement('span');
-                span.textContent = d;
-                strip.appendChild(span);
+    if (rollingYearElement && !isNaN(yearForAnimation)) {
+        function createDigitSlots(year) {
+            rollingYearElement.innerHTML = '';
+            const yearStr = String(year);
+            for (let i = 0; i < yearStr.length; i++) {
+                const digit = yearStr[i];
+                const slot = document.createElement('div');
+                slot.classList.add('digit-slot');
+
+                const strip = document.createElement('div');
+                strip.classList.add('digit-strip');
+
+                // Add digits 0–9
+                for (let d = 0; d <= 9; d++) {
+                    const span = document.createElement('span');
+                    span.textContent = d;
+                    strip.appendChild(span);
+                }
+
+                // Add target digit again to end strip cleanly
+                const finalSpan = document.createElement('span');
+                finalSpan.textContent = digit;
+                strip.appendChild(finalSpan);
+
+                // Apply long transition duration
+                strip.style.transition = 'transform 5s ease-in-out';
+
+                slot.appendChild(strip);
+                rollingYearElement.appendChild(slot);
             }
 
-            slot.appendChild(strip);
-            rollingYearSpan.appendChild(slot);
-            digitSlots.push({ slot, strip });
+            if (historicalDistanceTextElement) {
+                historicalDistanceTextElement.textContent = isBCE ? 'BCE' : 'AD';
+                historicalDistanceTextElement.classList.add('bce-label');
+            }
         }
 
-        // Add BCE label if needed
-        if (isBCE) {
-            const bceSpan = document.createElement('span');
-            bceSpan.className = 'bce-label';
-            bceSpan.textContent = ' BCE';
-            rollingYearSpan.appendChild(bceSpan);
+        function resetDigitStrips() {
+            const strips = rollingYearElement.querySelectorAll('.digit-strip');
+            strips.forEach(strip => {
+                strip.style.transition = 'none';
+                strip.style.transform = 'translateY(0)';
+                strip.offsetHeight; // force reflow
+                strip.style.transition = 'transform 5s ease-in-out';
+            });
         }
 
-        let isAnimating = false;
+        function animateRollingYear(targetYear) {
+            const yearStr = String(targetYear);
+            const digitSlots = rollingYearElement.querySelectorAll('.digit-slot');
 
-        const animateSlotToDigit = (strip, targetDigit, delay, steps = 15) => {
-            const digitHeight = strip.children[0].offsetHeight;
-            let current = 0;
-            let step = 0;
+            digitSlots.forEach((slot, index) => {
+                const targetDigit = parseInt(yearStr[index]);
+                const strip = slot.querySelector('.digit-strip');
+                const firstSpan = strip.children[0];
+                const digitHeight = firstSpan.offsetHeight || 0;
 
-            const intervalTime = animationDuration / steps;
+                if (digitHeight > 0 && !isNaN(targetDigit)) {
+                    strip.offsetWidth; // force reflow
+                    const translateY = -targetDigit * digitHeight;
+                    strip.style.transform = `translateY(${translateY}px)`;
+                }
+            });
+        }
 
-            setTimeout(() => {
-                const interval = setInterval(() => {
-                    step++;
-                    current = (current + 1) % 10;
-                    strip.style.transform = `translateY(-${digitHeight * current}px)`;
+        let hasCreatedSlots = false;
 
-                    if (step >= steps) {
-                        clearInterval(interval);
-                        strip.style.transform = `translateY(-${digitHeight * targetDigit}px)`;
+        const yearAnimationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (!hasCreatedSlots) {
+                        createDigitSlots(yearForAnimation);
+                        hasCreatedSlots = true;
+                    } else {
+                        resetDigitStrips();
                     }
-                }, intervalTime);
-            }, delay);
-        };
 
-        const animateDigits = () => {
-            if (isAnimating) return;
-            isAnimating = true;
+                    setTimeout(() => {
+                        animateRollingYear(yearForAnimation);
+                    }, 50);
+                }
+            });
+        }, { threshold: 0.5 });
 
-            const paddedStart = startStr.padStart(totalDigits, '0');
-            const paddedTarget = targetStr.padStart(totalDigits, '0');
+        // Attach the observer
+        if (animationContainer) {
+            yearAnimationObserver.observe(animationContainer);
 
-            digitSlots.forEach(({ strip }, i) => {
-                const targetDigit = parseInt(paddedTarget[i], 10);
-                const delay = i * 300;
-                animateSlotToDigit(strip, targetDigit, delay);
+            // ✅ Trigger immediately on load if already visible
+            const rect = animationContainer.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                createDigitSlots(yearForAnimation);
+                setTimeout(() => {
+                    animateRollingYear(yearForAnimation);
+                }, 50);
+            }
+        }
+    }
+
+    // 6. Social Share Functionality (Copy Link)
+    const copyLinkBtn = document.querySelector('.share-btn.copy-link');
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                textArea.style.top = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Link copied to clipboard!');
+                } catch (err) {
+                    console.error('Fallback: Failed to copy text', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        });
+    }
+
+    // NEW FEATURE: Reading Progress Bar
+    const readingProgressBar = document.querySelector('.reading-progress-bar');
+    const articleContent = document.querySelector('.article-content');
+
+    if (readingProgressBar && articleContent) {
+        window.addEventListener('scroll', () => {
+            const articleRect = articleContent.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const scrollDepth = -articleRect.top;
+            const effectiveScrollHeight = articleContent.scrollHeight - viewportHeight;
+
+            let progress = 0;
+            if (effectiveScrollHeight > 0) {
+                progress = (scrollDepth / effectiveScrollHeight) * 100;
+                progress = Math.max(0, Math.min(100, progress));
+            } else {
+                progress = articleRect.top <= 0 ? 100 : 0;
+            }
+
+            readingProgressBar.style.width = `${progress}%`;
+        });
+    }
+
+    // NEW FEATURE: Tooltips
+    const tooltips = document.querySelectorAll('.tooltip');
+
+    tooltips.forEach(tooltip => {
+        let tooltipText = tooltip.dataset.tooltip;
+        let tooltipElement;
+
+        function showTooltip() {
+            document.querySelectorAll('.tooltip-popup').forEach(popup => {
+                popup.style.opacity = '0';
+                popup.style.visibility = 'hidden';
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
             });
 
-            // Reset flag after total duration
-            setTimeout(() => {
-                isAnimating = false;
-            }, animationDuration + totalDigits * 300);
-        };
-
-        const isElementInViewport = (el) => {
-            const rect = el.getBoundingClientRect();
-            return rect.top < window.innerHeight && rect.bottom > 0;
-        };
-
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateDigits();
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            observer.observe(animationContainer);
-
-            if (isElementInViewport(animationContainer)) {
-                animateDigits();
+            if (!tooltipElement) {
+                tooltipElement = document.createElement('div');
+                tooltipElement.classList.add('tooltip-popup');
+                tooltipElement.textContent = tooltipText;
+                document.body.appendChild(tooltipElement);
             }
-        } else {
-            animateDigits(); // fallback
-        }
-    };
 
-    setupYearRollbackAnimation();
+            const rect = tooltip.getBoundingClientRect();
+            tooltipElement.style.left = `${rect.left + (rect.width / 2)}px`;
+            tooltipElement.style.top = `${rect.top - 10}px`;
+            tooltipElement.style.transform = `translate(-50%, -100%)`;
+            tooltipElement.style.opacity = '1';
+            tooltipElement.style.visibility = 'visible';
+        }
+
+        function hideTooltip() {
+            if (tooltipElement) {
+                tooltipElement.style.opacity = '0';
+                tooltipElement.style.visibility = 'hidden';
+                setTimeout(() => {
+                    if (tooltipElement && tooltipElement.parentNode) {
+                        tooltipElement.parentNode.removeChild(tooltipElement);
+                        tooltipElement = null;
+                    }
+                }, 300);
+            }
+        }
+
+        tooltip.addEventListener('mouseenter', showTooltip);
+        tooltip.addEventListener('mouseleave', hideTooltip);
+        tooltip.addEventListener('focus', showTooltip);
+        tooltip.addEventListener('blur', hideTooltip);
+
+        let touchTimer;
+        tooltip.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (tooltipElement && tooltipElement.style.visibility === 'visible') {
+                hideTooltip();
+            } else {
+                showTooltip();
+                touchTimer = setTimeout(hideTooltip, 3000);
+            }
+        });
+        tooltip.addEventListener('touchend', () => {
+            clearTimeout(touchTimer);
+        });
+    });
+
+    // Update copyright
+    const copyrightYearElement = document.querySelector('.copyright-year');
+    if (copyrightYearElement) {
+        copyrightYearElement.textContent = new Date().getFullYear();
+    }
 });

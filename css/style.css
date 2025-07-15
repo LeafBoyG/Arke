@@ -1,4 +1,4 @@
-
+/*style css */
 @import url('_variables.css');
 @import url('_base.css');
 @import url('_header.css');
@@ -48,4 +48,18 @@
   font-size: 1.4rem;
   opacity: 0.7;
   align-self: flex-end;
+}
+
+
+/* Lazy image starts blurred and fades in */
+img.blur-up {
+  filter: blur(20px);
+  opacity: 1;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+}
+
+/* After high-res image loads */
+img.blur-up.lazy-loaded {
+  filter: blur(0);
+  opacity: 1;
 }
